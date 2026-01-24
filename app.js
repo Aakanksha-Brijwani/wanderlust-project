@@ -195,30 +195,43 @@ app.use(express.static(path.join(__dirname, "public")));
 // ======================
 // SESSION STORE
 // ======================
+
+
+if (!process.env.MONGO_URI) {
+  throw new Error(" MONGO_URI is missing");
+}
+
+if (!process.env.SESSION_SECRET) {
+  throw new Error(" SESSION_SECRET is missing");
+}
+
 const store = MongoStore.create({
-  mongoUrl: dbUrl,
-  // crypto: {
-  //   secret: process.env.SECRET,
-  // },
+  mongoUrl: process.env.MONGO_URI,
+  crypto: {
+    secret: process.env.SESSION_SECRET,
+  },
   touchAfter: 24 * 3600,
 });
 
 store.on("error", (err) => {
-  console.error("SESSION STORE ERROR:", err);
+  console.log(" MongoStore error:", err);
 });
 
-const sessionOptions = {
-  store,
-  secret: sessionSecret,
-  //secret: process.env.SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  },
-};
+app.use(
+  session({
+    store,
+    name: "session",
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    },
+  })
+);
+
 
 app.use(session(sessionOptions));
 app.use(flash());

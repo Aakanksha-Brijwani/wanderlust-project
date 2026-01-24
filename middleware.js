@@ -14,12 +14,13 @@ module.exports.isLoggedIn = (req, res, next) => {
 
 
 module.exports.savedRedirectUrl = (req, res, next) => {
-  if (req.session && req.session.returnTo) {
+  if (req.session?.returnTo) {
     res.locals.redirectUrl = req.session.returnTo;
-    delete req.session.returnTo; // ✅ important cleanup
+    delete req.session.returnTo;
   }
   next();
 };
+
 
 
 module.exports.isOwner= async(req,res,next)=>{

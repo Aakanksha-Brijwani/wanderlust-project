@@ -68,8 +68,6 @@
 //   console.log("ERROR in MONGO SESSION STORE", err);
 // });
 
-
-
 // const sessionOptions = {
 //   store,
 //   secret: sessionSecret,
@@ -135,7 +133,6 @@
 //   console.log("server is listning to port 8080");
 // });
 
-
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
@@ -164,8 +161,9 @@ const userRouter = require("./routes/user.js");
 // DATABASE CONFIG
 // ======================
 const sessionSecret = process.env.SECRET || "mysupersecretcode";
-const dbUrl =
-  process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/wanderlust";
+const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/wanderlust";
+
+console.log("Connecting to MongoDB");
 
 async function main() {
   try {
@@ -173,11 +171,11 @@ async function main() {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       tls: true,
-      tlsAllowInvalidCertificates: true, // IMPORTANT for Windows
+      tlsAllowInvalidCertificates: true,
     });
-    console.log(" Connected to MongoDB");
+    console.log("Connected to MongoDB");
   } catch (err) {
-    console.error(" MongoDB Connection Error:", err);
+    console.error("MongoDB Connection Error:", err);
   }
 }
 
@@ -206,7 +204,7 @@ const store = MongoStore.create({
 });
 
 store.on("error", (err) => {
-  console.log("SESSION STORE ERROR:", err);
+  console.error("SESSION STORE ERROR:", err);
 });
 
 const sessionOptions = {
@@ -238,8 +236,8 @@ passport.deserializeUser(User.deserializeUser());
 // GLOBAL MIDDLEWARE
 // ======================
 app.use((req, res, next) => {
-  res.locals.success = req.flash("success");
-  res.locals.error = req.flash("error");
+  res.locals.success = req.flash("success") || [];
+  res.locals.error = req.flash("error") || [];
   res.locals.currUser = req.user;
   next();
 });
@@ -258,11 +256,8 @@ app.use((req, res, next) => {
   next(new ExpressError(404, "Page Not Found"));
 });
 
-
 app.use((err, req, res, next) => {
-  if (res.headersSent) {
-    return next(err);
-  }
+  if (res.headersSent) return next(err);
   const { statusCode = 500, message = "Something went wrong!" } = err;
   res.status(statusCode).render("error.ejs", { message });
 });
@@ -271,5 +266,5 @@ app.use((err, req, res, next) => {
 // SERVER
 // ======================
 app.listen(8080, () => {
-  console.log(" Server running on port 8080");
+  console.log("Server running on port 8080");
 });

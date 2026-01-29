@@ -19,15 +19,15 @@
 
 <body class="d-flex flex-column min-vh-100">
 
-  <%- include("../partials/navbar.ejs") %>
+  <%- include("../includes/navbar.ejs") %>
 
-  <!-- MAIN CONTENT -->
-  <main class="flex-grow-1">
+  <main class="container flex-fill">
+    <%- include("../includes/flash.ejs") %>
     <%- body %>
   </main>
 
-  <%- include("../partials/footer.ejs") %>
+  <%- include("../includes/footer.ejs") %>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

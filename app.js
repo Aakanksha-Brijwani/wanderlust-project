@@ -240,6 +240,12 @@ app.use((req, res, next) => {
   next();
 });
 
+
+app.get("/", (req, res) => {
+  res.redirect("/listings");
+});
+
+
 // ======================
 // ROUTES
 // ======================
@@ -263,6 +269,8 @@ app.use((err, req, res, next) => {
 // ======================
 // SERVER
 // ======================
-app.listen(8080, () => {
-  console.log("Server running on port 8080");
+const port = process.env.PORT || 3000;
+
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server running on port ${port}`);
 });
